@@ -1,0 +1,3 @@
+LSTM-Based Trading Strategy with MetaTrader 5
+This project uses an LSTM model to predict EUR/USD prices and make trading decisions. Key steps include data retrieval, preprocessing, model training, evaluation, and executing trades based on predictions.
+Main Components Data Retrieval: Connects to MetaTrader 5 to fetch historical price data for EUR/USD. Preprocessing: Converts data to a DataFrame, adds moving averages, and scales features for LSTM input. LSTM Model: Builds and trains an LSTM model using TensorFlow to predict future prices. Trading Strategy: Places buy/sell orders based on model predictions. Evaluation: Calculates R-squared and RMSE, and compares actual vs predicted prices. Dependencies MetaTrader 5 (MetaTrader5) Pandas, NumPy, TensorFlow, Scikit-learn
