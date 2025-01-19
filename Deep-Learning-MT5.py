@@ -1,3 +1,4 @@
+
 import MetaTrader5 as mt5
 import pandas as pd
 from datetime import datetime
@@ -12,8 +13,8 @@ if not mt5.initialize():
 
 # Define the symbol and timeframe
 symbol = 'EURUSD'
-timeframe = mt5.TIMEFRAME_M15  # 15-minute timeframe
-from_date = datetime(2024, 8, 1)  # Start date
+timeframe = mt5.TIMEFRAME_H1  # 15-minute timeframe
+from_date = datetime(2024, 1, 1)  # Start date
 to_date = datetime(2024, 12, 1)   # End date
 
 # Retrieve the price data for the specified date range
@@ -71,7 +72,13 @@ model = tf.keras.Sequential([
 model.compile(optimizer='adam', loss='mean_squared_error')
 
 # Train the model
-model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=5, batch_size=64)
+model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=5, batch_size=200
+
+
+
+
+
+)
 
 # Evaluate the model
 model.evaluate(X_test, y_test)
@@ -146,20 +153,34 @@ for i in range(len(predicted_prices_original) - 1):
 # Disconnect from MetaTrader 5
 mt5.shutdown()
 #####################
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+# Print actual vs predicted prices for the first 10 predictions with percentage error
 
-# پیش‌بینی‌ها و قیمت‌های واقعی
-actual_prices = y_test
-predicted_prices = model.predict(X_test)
+actual_prices_original = scaler.inverse_transform(
+    np.hstack([y_test.reshape(-1, 1), np.zeros((y_test.shape[0], scaled_data.shape[1] - 1))])
+)[:, 0]
 
-# محاسبه MSE (Mean Squared Error)
-mse = mean_squared_error(actual_prices, predicted_prices)
-print(f'Mean Squared Error (MSE): {mse}')
+print("Index\tActual Price\tPredicted Price\tPercentage Error")
+for i, (actual, predicted) in enumerate(zip(actual_prices_original[:10], predicted_prices_original[:10])):
+    percentage_error = abs((actual - predicted) / actual) * 100
+    print(f"{i+1}\t{actual:.5f}\t\t{predicted:.5f}\t\t{percentage_error:.2f}%")
+##########################################
+from sklearn.metrics import r2_score, mean_squared_error
+import math
 
-# محاسبه MAE (Mean Absolute Error)
-mae = mean_absolute_error(actual_prices, predicted_prices)
-print(f'Mean Absolute Error (MAE): {mae}')
+# Print actual vs predicted prices with percentage error, R-squared, and RMSE
 
-# محاسبه R² (Coefficient of Determination)
-r2 = r2_score(actual_prices, predicted_prices)
-print(f'R² Score: {r2}')
+actual_prices_original = scaler.inverse_transform(
+    np.hstack([y_test.reshape(-1, 1), np.zeros((y_test.shape[0], scaled_data.shape[1] - 1))])
+)[:, 0]
+
+# Calculate R-squared and RMSE
+r_squared = r2_score(actual_prices_original, predicted_prices_original)
+rmse = math.sqrt(mean_squared_error(actual_prices_original, predicted_prices_original))
+
+print(f"R-squared: {r_squared:.5f}")
+print(f"RMSE: {rmse:.5f}")
+
+print("\nIndex\tActual Price\tPredicted Price\tPercentage Error")
+for i, (actual, predicted) in enumerate(zip(actual_prices_original[:10], predicted_prices_original[:10])):
+    percentage_error = abs((actual - predicted) / actual) * 100
+    print(f"{i+1}\t{actual:.5f}\t\t{predicted:.5f}\t\t{percentage_error:.2f}%")
